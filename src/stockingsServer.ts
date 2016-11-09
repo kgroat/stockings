@@ -15,8 +15,7 @@ const ONE_SECOND = 1000;
 const ONE_MINUTE = 60 * ONE_SECOND;
 const HALF_HOUR = 30 * ONE_MINUTE;
 
-export interface StockingsConnectionRequest extends ConnectionRequest {
-}
+export interface StockingsConnectionRequest extends ConnectionRequest {}
 
 export interface StockingsServerOptions {
   server: HttpServer;
@@ -98,13 +97,18 @@ export class StockingsServer implements SubscriptionTracker {
     });
   }
 
-  sendData<T>(type: string, payload: T): void {
+  sendData<T>(type: string, payload: T, cb?: (err?: any) => void): void {
     if(!this._connectionsBySubscription.has(type)){
       return;
     }
-    var subscribers = this._connectionsBySubscription.get(type);
-    iterableForEach(subscribers.values(), (connection) => {
-      connection.sendData(type, payload);
+    setImmediate(() => {
+      var subscribers = this._connectionsBySubscription.get(type);
+      iterableForEach(subscribers.values(), (connection) => {
+        connection.sendData(type, payload);
+      });
+      if(typeof cb === 'function'){
+        cb();
+      }
     });
   }
 

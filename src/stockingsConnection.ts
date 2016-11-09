@@ -13,6 +13,11 @@ export interface SubscriptionTracker {
   unregisterSubscription: (connection: StockingsConnection, type: string) => void;
 }
 
+export interface Transaction {
+  transactionId: string;
+  subscriptions: string[];
+}
+
 export class StockingsConnection {
   private _connection: WebsocketConnection;
   private _clientId: string;
@@ -60,7 +65,11 @@ export class StockingsConnection {
   }
 
   getClientAddress(): string {
-    return this._connection.socket.remoteAddress;
+    return this._connection.remoteAddress;
+  }
+
+  generateTransactionId(): string {
+    return generateRandomId();
   }
 
   sendData<T>(type: string, payload: T): void {
@@ -111,6 +120,10 @@ export class StockingsConnection {
     this._transactions.delete(transactionId);
   }
 
+  getSubscriptionHeader(transactionId: string): string {
+    return JSON.stringify(this._buildTransaction(transactionId));
+  }
+
   getSubscriptions(transactionId: string): string[] {
     return this._transactions.get(transactionId);
   }
@@ -146,5 +159,12 @@ export class StockingsConnection {
 
     this._subscriptions.set(type, value);
     return value;
+  }
+
+  private _buildTransaction(transactionId: string): Transaction {
+    return {
+      transactionId: transactionId,
+      subscriptions: this.getSubscriptions(transactionId)
+    }
   }
 }
