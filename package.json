@@ -4,6 +4,8 @@
   "homepage": "http://ionicframework.com/",
   "private": true,
   "scripts": {
+    "start": "npm run ionic:serve",
+    "deploy": "git subtree push --prefix www origin gh-pages",
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
