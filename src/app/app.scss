@@ -14,3 +14,17 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+$diagnostic-bg: #F8F8F8;
+$diagnostic-fg: #444444;
+
+div#ion-diagnostics-toast {
+  background: $diagnostic-bg;
+  color: $diagnostic-fg;
+  .ion-diagnostics-toast-message {
+    color: $diagnostic-fg;
+  }
+  .ion-diagnostics-toast-spinner svg circle {
+    stroke: $diagnostic-fg;
+  }
+}
