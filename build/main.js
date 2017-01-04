@@ -76762,7 +76762,7 @@ var MyApp = (function () {
         ];
     }
     MyApp = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({template:/*ion-inline-start:"/development/stockings/stockings-gh-pages/src/app/app.html"*/'<ion-menu [content]="content">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button menuClose ion-item *ngFor="let p of pages" [routerLink]="p.link">\n        <ion-icon [name]="p.icon" item-left></ion-icon>\n        {{p.title}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<router-outlet #content></router-outlet>\n'/*ion-inline-end:"/development/stockings/stockings-gh-pages/src/app/app.html"*/
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({template:/*ion-inline-start:"/development/stockings/stockings-gh-pages/src/app/app.html"*/'<ion-menu [content]="content">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button menuClose ion-item *ngFor="let p of pages" [routerLink]="p.link">\n        <ion-icon [name]="p.icon" item-left></ion-icon>\n        {{p.title}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<router-outlet #content></router-outlet>\n\n<a id="jsLink" href="https://js.org" target="_blank" title="JS.ORG | JavaScript Community">\n  <img src="https://logo.js.org/bright_horz.png" alt="JS.ORG Logo"/>\n</a>\n'/*ion-inline-end:"/development/stockings/stockings-gh-pages/src/app/app.html"*/
         }), 
         __metadata('design:paramtypes', [])
     ], MyApp);
