@@ -33,3 +33,21 @@ ion-header ~ ion-content > div.fixed-content,
 ion-header ~ ion-content > div.scroll-content {
   margin-top: 56px;
 }
+
+#jsLink {
+  position: fixed;
+  z-index: 10000;
+  cursor: pointer;
+  right: 5px;
+  top: 5px;
+
+  .md & img {
+    height: 46px;
+    width: auto;
+  }
+
+  .ios & img {
+    height: 34px;
+    width: auto;
+  }
+}

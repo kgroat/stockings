@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "start": "npm run ionic:serve",
-    "deploy": "ionic build && git subtree push --prefix --force www origin gh-pages",
+    "deploy": "ionic build && git push origin :gh-pages && git subtree push --prefix www origin gh-pages",
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
