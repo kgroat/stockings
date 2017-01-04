@@ -28,3 +28,8 @@ div#ion-diagnostics-toast {
     stroke: $diagnostic-fg;
   }
 }
+
+ion-header ~ ion-content > div.fixed-content,
+ion-header ~ ion-content > div.scroll-content {
+  margin-top: 56px;
+}

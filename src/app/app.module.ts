@@ -1,8 +1,14 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, enableProdMode } from '@angular/core';
+import { CommonModule, LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser'
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { LinksPage } from '../pages/links/links';
+import { AppRoutes } from './app.router';
+
+//enableProdMode();
 
 @NgModule({
   declarations: [
@@ -11,7 +17,9 @@ import { LinksPage } from '../pages/links/links';
     LinksPage
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    CommonModule,
+    IonicModule.forRoot(MyApp),
+    RouterModule.forRoot(AppRoutes)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -19,6 +27,9 @@ import { LinksPage } from '../pages/links/links';
     HomePage,
     LinksPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}]
+  providers: [
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    {provide: LocationStrategy, useClass: HashLocationStrategy}
+  ]
 })
 export class AppModule {}
