@@ -22121,3 +22121,8 @@ div#ion-diagnostics-toast .ion-diagnostics-toast-message {
 div#ion-diagnostics-toast .ion-diagnostics-toast-spinner svg circle {
   stroke: #444444;
 }
+
+ion-header ~ ion-content > div.fixed-content,
+ion-header ~ ion-content > div.scroll-content {
+  margin-top: 56px;
+}
