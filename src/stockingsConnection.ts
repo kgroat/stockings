@@ -92,6 +92,8 @@ export class StockingsConnection {
     var transactionSubscriptions = [];
     if(this._transactions.has(transactionId)){
       transactionSubscriptions = this._transactions.get(transactionId);
+    } else {
+      this._transactions.set(transactionId, transactionSubscriptions);
     }
     var value = 0;
     if(this._subscriptions.has(type)){
@@ -100,6 +102,8 @@ export class StockingsConnection {
 
     if(transactionSubscriptions.indexOf(type) >= 0){
       return value;
+    } else {
+      transactionSubscriptions.push(type);
     }
 
     if(value === 0){

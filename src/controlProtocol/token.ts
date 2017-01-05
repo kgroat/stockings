@@ -10,7 +10,7 @@ const ONE_SECOND = 1000;
 const MAX_TRIES = 12;
 
 export function applyToken(connection: StockingsConnection, encoder: (id: string, addr: string) => Promise<string>): Observable<Subscription> {
-  return Observable.fromPromise<Subscription[]>(this._encoder(connection.getId(), connection.getClientAddress()).then((token) => {
+  return Observable.fromPromise<Subscription[]>(encoder(connection.getId(), connection.getClientAddress()).then((token) => {
     connection.sendControl(CLIENT_TOKEN_TYPE, token);
 
     var sendTokenSubscription = Observable.timer(0, 20 * ONE_SECOND).subscribe((i) => {

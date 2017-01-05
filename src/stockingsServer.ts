@@ -65,22 +65,25 @@ export class StockingsServer implements SubscriptionTracker {
     var disposeMetaAfter = valueOrDefault(options.disposeMetaAfter, HALF_HOUR);
 
     this._socketServer.on('request', (req) => {
-      if(hasStockingsProtocol(req) && this._acceptRequest(req)){
-        var connection = new StockingsConnection(req.accept(STOCKINGS_PROTOCOL), this);
-        applyProtocol({
-          connection: connection,
-          tokenEncoder: this._encoder,
-          getConnection: (token) => this.getConnection(token, connection.getClientAddress())
-        });
-        this._connections.set(connection.getId(), connection);
-        var disposeMetaSubscription = connection.closeObservable.delay(disposeMetaAfter).subscribe(() => {
-          this._connections.delete(connection.getId());
-          connection.getAllSubscriptions().forEach((type) => {
-            this.unregisterSubscription(connection, type);
-          });
-          disposeMetaSubscription.unsubscribe();
-        });
+      if(!hasStockingsProtocol(req) || !this._acceptRequest(req)){
+        req.reject();
+        return;
       }
+
+      var connection = new StockingsConnection(req.accept(STOCKINGS_PROTOCOL), this);
+      applyProtocol({
+        connection: connection,
+        tokenEncoder: this._encoder,
+        getConnection: (token) => this.getConnection(token, connection.getClientAddress())
+      });
+      this._connections.set(connection.getId(), connection);
+      var disposeMetaSubscription = connection.closeObservable.delay(disposeMetaAfter).subscribe(() => {
+        this._connections.delete(connection.getId());
+        connection.getAllSubscriptions().forEach((type) => {
+          this.unregisterSubscription(connection, type);
+        });
+        disposeMetaSubscription.unsubscribe();
+      });
     });
   }
 
@@ -134,5 +137,5 @@ export class StockingsServer implements SubscriptionTracker {
 }
 
 function hasStockingsProtocol(req: StockingsConnectionRequest): boolean {
-  return req.requestedProtocols.map(p => p.toUpperCase()).indexOf(STOCKINGS_PROTOCOL) > -1;
+  return req.requestedProtocols.map(p => p.toLowerCase()).indexOf(STOCKINGS_PROTOCOL) > -1;
 }
