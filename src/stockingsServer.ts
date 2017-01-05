@@ -1,6 +1,6 @@
 import {server as WebSocketServer, request as ConnectionRequest} from 'websocket';
 import {Server as HttpServer} from 'http';
-import {Observable} from 'rxjs/rx';
+import {Observable} from 'rxjs/Rx';
 
 import {StockingsConnection, SubscriptionTracker} from './stockingsConnection';
 import {makeEncoder, makeDecoder, TokenPayload, isAlgorithmAsymmetric} from './tokenHelpers';

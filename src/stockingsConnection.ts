@@ -1,5 +1,5 @@
 import {connection as WebsocketConnection} from 'websocket';
-import {Subscriber, Observable} from 'rxjs/rx';
+import {Subscriber, Observable} from 'rxjs/Rx';
 
 import {generateRandomId} from './helpers';
 import {SocketMessage, serializeMessage} from './socketMessage';
