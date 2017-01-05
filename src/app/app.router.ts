@@ -1,5 +1,5 @@
 
-import { RouterModule, Route } from '@angular/router';
+import { Route } from '@angular/router';
 import { HomePage } from '../pages/home/home';
 import { LinksPage } from '../pages/links/links';
 

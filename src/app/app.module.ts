@@ -1,7 +1,6 @@
 import { NgModule, ErrorHandler, enableProdMode } from '@angular/core';
 import { CommonModule, LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { BrowserModule } from '@angular/platform-browser'
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
