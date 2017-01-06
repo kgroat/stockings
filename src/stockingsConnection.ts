@@ -161,7 +161,6 @@ export class StockingsConnection {
     this._connection.clearCloseTimer
   }
 
-  // TODO: validate no closure or global scoping in mergeStrategy
   private standardizeMergeStrategyString(mergeStrategyString: string): string {
     var parameters = getParamNamesFromFunctionString(mergeStrategyString);
     if(parameters.length !== 2){
@@ -169,9 +168,6 @@ export class StockingsConnection {
     }
 
     var body = getBodyFromFunctionString(mergeStrategyString);
-    if(body.indexOf('return') < 0){
-      throw new Error(`Invalid merge strategy.  Should return a value; instead found\n${body}`);
-    }
 
     return `(${parameters[0]},${parameters[1]})=>{${body}}`
   }
