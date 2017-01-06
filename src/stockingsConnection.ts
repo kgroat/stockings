@@ -15,7 +15,12 @@ export interface SubscriptionTracker {
 
 export interface Transaction {
   transactionId: string;
-  subscriptions: string[];
+  subscriptions: TransactionSubscription[];
+}
+
+export interface TransactionSubscription {
+  type: string;
+  mergeStrategy?: string;
 }
 
 export class StockingsConnection {
@@ -27,7 +32,7 @@ export class StockingsConnection {
   private readonly _closeSubscribers: Map<string, Subscriber<void>> = new Map();
 
   private readonly _subscriptions: Map<string, number> = new Map();
-  private readonly _transactions: Map<string, string[]> = new Map();
+  private readonly _transactions: Map<string, TransactionSubscription[]> = new Map();
 
   private readonly _tracker: SubscriptionTracker;
 
@@ -88,8 +93,8 @@ export class StockingsConnection {
     return this.controlObservable.filter(msg => msg.type === type).map(msg => msg.payload);
   }
 
-  addSubscription(type: string, transactionId: string): number {
-    var transactionSubscriptions = [];
+  addSubscription(type: string, transactionId: string, mergeStrategy?: ((oldValue, newValue) => any)|string): number {
+    var transactionSubscriptions: TransactionSubscription[] = [];
     if(this._transactions.has(transactionId)){
       transactionSubscriptions = this._transactions.get(transactionId);
     } else {
@@ -99,11 +104,20 @@ export class StockingsConnection {
     if(this._subscriptions.has(type)){
       value = this._subscriptions.get(type);
     }
+    
+    var mergeStrategyString: string;
+    if(mergeStrategy){
+      if(typeof mergeStrategy === 'function'){
+        mergeStrategyString = this.convertMergeStrategyToString(mergeStrategy);
+      } else {
+        mergeStrategyString = this.standardizeMergeStrategyString(mergeStrategy);
+      }
+    }
 
-    if(transactionSubscriptions.indexOf(type) >= 0){
+    if(transactionSubscriptions.find(sub => sub.type == type)){
       return value;
     } else {
-      transactionSubscriptions.push(type);
+      transactionSubscriptions.push({ type: type, mergeStrategy: mergeStrategyString });
     }
 
     if(value === 0){
@@ -120,7 +134,7 @@ export class StockingsConnection {
       return;
     }
     var transactionSubscriptions = this._transactions.get(transactionId);
-    transactionSubscriptions.forEach((type) => this._removeSubscription(type));
+    transactionSubscriptions.forEach((sub) => this._removeSubscription(sub.type));
     this._transactions.delete(transactionId);
   }
 
@@ -129,7 +143,7 @@ export class StockingsConnection {
   }
 
   getSubscriptions(transactionId: string): string[] {
-    return this._transactions.get(transactionId);
+    return this._transactions.get(transactionId).map(sub => sub.type);
   }
 
   getAllSubscriptions(): string[] {
@@ -138,13 +152,32 @@ export class StockingsConnection {
 
   addSubscriptionsFrom(other: StockingsConnection): void {
     iterableForEach(other._transactions.keys(), (transactionId) => {
-      other._transactions.get(transactionId).forEach((type) => this.addSubscription(type, transactionId));
+      other._transactions.get(transactionId).forEach((sub) => this.addSubscription(sub.type, transactionId, sub.mergeStrategy));
     });
   }
 
   close(): void {
     this._connection.close();
     this._connection.clearCloseTimer
+  }
+
+  // TODO: validate no closure or global scoping in mergeStrategy
+  private standardizeMergeStrategyString(mergeStrategyString: string): string {
+    var parameters = getParamNamesFromFunctionString(mergeStrategyString);
+    if(parameters.length !== 2){
+      throw new Error(`Invalid merge strategy.  Should have 2 parameters; instead had ${parameters.length}`);
+    }
+
+    var body = getBodyFromFunctionString(mergeStrategyString);
+    if(body.indexOf('return') < 0){
+      throw new Error(`Invalid merge strategy.  Should return a value; instead found\n${body}`);
+    }
+
+    return `(${parameters[0]},${parameters[1]})=>{${body}}`
+  }
+
+  private convertMergeStrategyToString(mergeStrategy: (a, b) => any): string {
+    return this.standardizeMergeStrategyString(getUncommentedFunctionString(mergeStrategy));
   }
 
   private _removeSubscription(type: string): number {
@@ -168,7 +201,27 @@ export class StockingsConnection {
   private _buildTransaction(transactionId: string): Transaction {
     return {
       transactionId: transactionId,
-      subscriptions: this.getSubscriptions(transactionId)
+      subscriptions: this._transactions.get(transactionId)
     }
+  }
+}
+
+
+var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+var ARGUMENT_NAMES = /([^\s,]+)/g;
+function getUncommentedFunctionString(func: (a, b) => any): string {
+  return func.toString().replace(STRIP_COMMENTS, '');
+}
+function getParamNamesFromFunctionString(fnStr: string): string[] {
+  var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
+  if(result === null)
+    result = [];
+  return result;
+}
+function getBodyFromFunctionString(fnStr: string): string {
+  if(fnStr.indexOf('{') > 0){
+    return fnStr.slice(fnStr.indexOf('{')+1, fnStr.lastIndexOf('}')).trim();
+  } else {
+    return `return ${fnStr.substring(fnStr.indexOf('=>')).trim()}`;
   }
 }

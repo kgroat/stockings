@@ -81,8 +81,13 @@ If this happens, the websocket connection identified by the token in the `'clien
 In addition, a unique transaction id should be generated to identify the set of subscriptions being added as a part of the http request.
 
 #### (c) Communicating subscriptions
-If subscriptions are created as a part of an http request, the server's response shall contain the `'client-subscriptions'` header.  This header will contain a JSON string for an object with two properties: transactionId and subscriptions.
-The transactionId property should contain the unique transaction id generated to identify the subscriptions, and the subscriptions property should be an array of strings containing the data-carrying message types for which subscriptions were created.
+If subscriptions are created as a part of an http request, the server's response shall contain the `'client-subscriptions'` header.  This header will contain a JSON string for an object with two properties: `transactionId` and `subscriptions`.
+The `transactionId` property should contain the unique transaction id generated to identify the subscriptions, and the `subscriptions` property should be an array of Subscription objects.
+A Subscription object has two properties: `type`, containing the data-carrying message types for which subscription was created and `mergeStrategy`, an optional string property which defines how each object that comes through the subscription is merged into the original response from the server.
+
+#### (d) Merge strategies
+If a Subscription object contains a `'mergeStrategy'` string, then it should be in the form `(a,b)=>{return c;}`.  The parameters `a` and `b` can have any name, and the return value `c` can be any combination of `a` and `b`.  No closure scoping is allowed.
+The first parameter, `a` will be the current (previous) state, while `b` will be the new object obtained through the subscription.
 
 
 ### 4. Sending messages during http requests
