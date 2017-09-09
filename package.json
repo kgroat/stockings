@@ -1,6 +1,6 @@
 {
   "name": "stockings",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Core for the socketized observable framework",
   "main": "index.js",
   "types": "index.d.ts",
