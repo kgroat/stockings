@@ -86,9 +86,7 @@ The `transactionId` property should contain the unique transaction id generated 
 A Subscription object has two properties: `type`, containing the data-carrying message types for which subscription was created and `mergeStrategy`, an optional string property which defines how each object that comes through the subscription is merged into the original response from the server.
 
 #### (d) Merge strategies
-If a Subscription object contains a `'mergeStrategy'` string, then it should be in the form `(a,b)=>{return c;}`.  The parameters `a` and `b` can have any name, and the return value `c` can be any combination of `a` and `b`.  No closure scoping is allowed.
-The first parameter, `a` will be the current (previous) state, while `b` will be the new object obtained through the subscription.
-
+If a Subscription object contains a `'mergeStrategy'` string, then it should be one of the following values: `'replace', 'append', 'prepend', or 'upsert'`.  If it is `'upsert'`, then the Subscription object should also contain an `'upsertKey'` string, defining the property by which two objects should be considered similar for the purposes of inserting or updating.
 
 ### 4. Sending messages during http requests
 During the processing of an http request, the server may decide to send messages to all clients with subscriptions to a particular type of data-carrying message.
