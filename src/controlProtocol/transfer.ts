@@ -1,20 +1,20 @@
 
-import {Observable, Subscription} from 'rxjs/Rx'
+import { Subscription } from 'rxjs/Rx'
 
-import {StockingsConnection} from '../stockingsConnection'
+import { StockingsConnection } from '../stockingsConnection'
 
 const TRANSFER_TYPE = 'client-change'
 
-export function applyTransfer(connection: StockingsConnection, getConnection: (token: string) => Promise<StockingsConnection>): Subscription[] {
-  var transferSubscription = connection.listenControl<string>(TRANSFER_TYPE).subscribe((token) => {
+export function applyTransfer (connection: StockingsConnection, getConnection: (token: string) => Promise<StockingsConnection>): Subscription[] {
+  const transferSubscription = connection.listenControl<string>(TRANSFER_TYPE).subscribe((token) => {
     getConnection(token).then((oldConnection) => {
-      if(oldConnection){
+      if (oldConnection) {
         connection.addSubscriptionsFrom(oldConnection)
       }
-    }, (err) => {
+    }).catch(() => {
       connection.close()
     })
   })
-  
+
   return [transferSubscription]
 }

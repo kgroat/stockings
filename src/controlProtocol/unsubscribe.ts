@@ -1,12 +1,12 @@
 
-import {Observable, Subscription} from 'rxjs/Rx'
+import { Subscription } from 'rxjs/Rx'
 
-import {StockingsConnection} from '../stockingsConnection'
+import { StockingsConnection } from '../stockingsConnection'
 
 const UNSUBSCRIBE_TYPE = 'unsubscribe'
 
-export function applyUnsubscribe(connection: StockingsConnection): Subscription[] {
-  var unsubscribeSubscription = connection.listenControl<string>(UNSUBSCRIBE_TYPE).subscribe((transactionId) => {
+export function applyUnsubscribe (connection: StockingsConnection): Subscription[] {
+  const unsubscribeSubscription = connection.listenControl<string>(UNSUBSCRIBE_TYPE).subscribe((transactionId) => {
     connection.removeSubscriptions(transactionId)
     connection.sendControl(UNSUBSCRIBE_TYPE, transactionId)
   })
