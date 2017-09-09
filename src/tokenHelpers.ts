@@ -1,8 +1,8 @@
-import * as jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken'
 
 export interface TokenPayload {
-  clientId: string;
-  address: string;
+  clientId: string
+  address: string
 }
 
 export function makeDecoder(algorithm: string, decryptionKey: string){
@@ -11,17 +11,17 @@ export function makeDecoder(algorithm: string, decryptionKey: string){
       if(clientToken){
         jwt.verify(clientToken, decryptionKey, { algorithms: [algorithm], ignoreExpiration: true, subject: 'stockings' }, function(err: any, decoded: TokenPayload){
           if(err){
-            return rej(err);
+            return rej(err)
           }
           if(!decoded || !decoded.clientId || !decoded.address){
-            return rej('Malformed client token');
+            return rej('Malformed client token')
           }
-          res(decoded);
-        });
+          res(decoded)
+        })
       } else {
-        res(null);
+        res(null)
       }
-    });
+    })
   }
 }
 
@@ -29,22 +29,22 @@ export function makeEncoder(algorithm: string, encryptionKey: string) {
   return function encode(clientId: string, address: string): Promise<string> {
     return new Promise<string>((res, rej) => {
       if(clientId === null || clientId === undefined){
-        return rej('Parameter clientId was not supplied correctly.');
+        return rej('Parameter clientId was not supplied correctly.')
       }
       let payload: TokenPayload = {
         clientId: clientId,
         address: address
-      };
+      }
       jwt.sign(payload, encryptionKey, { algorithm: algorithm, expiresIn: '30m', subject: 'stockings' }, (err, data) => {
         if(err){
-          return rej(err);
+          return rej(err)
         }
-        res(data);
-      });
-    });
+        res(data)
+      })
+    })
   }
 }
 
 export function isAlgorithmAsymmetric(algorithm: string){
-  return algorithm.toUpperCase().indexOf('RS') === 0;
+  return algorithm.toUpperCase().indexOf('RS') === 0
 }
