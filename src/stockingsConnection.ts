@@ -8,6 +8,8 @@ import {makeSubscriberMapObservable, sendMessageIfPrefixed, sendData, complete, 
 const DATA_PREFIX = 'm:';
 const CONTROL_PREFIX = 'c:';
 
+export type MergeStrategy = 'replace' | 'upsert' | 'append' | 'prepend'
+
 export interface SubscriptionTracker {
   registerSubscription: (connection: StockingsConnection, type: string) => void;
   unregisterSubscription: (connection: StockingsConnection, type: string) => void;
@@ -20,7 +22,8 @@ export interface Transaction {
 
 export interface TransactionSubscription {
   type: string;
-  mergeStrategy?: string;
+  mergeStrategy?: MergeStrategy;
+  upsertKey?: string;
 }
 
 export class StockingsConnection {
@@ -93,7 +96,7 @@ export class StockingsConnection {
     return this.controlObservable.filter(msg => msg.type === type).map(msg => msg.payload);
   }
 
-  addSubscription(type: string, transactionId: string, mergeStrategy?: ((oldValue, newValue) => any)|string): number {
+  addSubscription(type: string, transactionId: string, mergeStrategy: MergeStrategy = 'replace'): number {
     var transactionSubscriptions: TransactionSubscription[] = [];
     if(this._transactions.has(transactionId)){
       transactionSubscriptions = this._transactions.get(transactionId);
@@ -104,20 +107,11 @@ export class StockingsConnection {
     if(this._subscriptions.has(type)){
       value = this._subscriptions.get(type);
     }
-    
-    var mergeStrategyString: string;
-    if(mergeStrategy){
-      if(typeof mergeStrategy === 'function'){
-        mergeStrategyString = this.convertMergeStrategyToString(mergeStrategy);
-      } else {
-        mergeStrategyString = this.standardizeMergeStrategyString(mergeStrategy);
-      }
-    }
 
     if(transactionSubscriptions.find(sub => sub.type == type)){
       return value;
     } else {
-      transactionSubscriptions.push({ type: type, mergeStrategy: mergeStrategyString });
+      transactionSubscriptions.push({ type, mergeStrategy });
     }
 
     if(value === 0){
